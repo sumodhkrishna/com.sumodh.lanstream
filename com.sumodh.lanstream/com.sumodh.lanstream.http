@@ -1,0 +1,6 @@
+@com.sumodh.lanstream_HostAddress = http://localhost:5274
+
+GET {{com.sumodh.lanstream_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
