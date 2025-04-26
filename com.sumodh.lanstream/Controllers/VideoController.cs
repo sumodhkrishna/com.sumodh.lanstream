@@ -25,9 +25,9 @@ namespace com.sumodh.lanstream.Controllers
             }
 
             var fileInfo = new FileInfo(VideoFilePath);
-            var fileStream = new FileStream(VideoFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            var fileStream = new FileStream(VideoFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true);
             var response = Response;
-            response.Headers.Add("Accept-Ranges", "bytes");
+            response.Headers.Append("Accept-Ranges", "bytes");
 
             if (Request.Headers.ContainsKey("Range"))
             {
@@ -38,14 +38,16 @@ namespace com.sumodh.lanstream.Controllers
                 long contentLength = end - start + 1;
 
                 response.StatusCode = (int)HttpStatusCode.PartialContent;
-                response.Headers.Add("Content-Range", $"bytes {start}-{end}/{fileInfo.Length}");
+                response.Headers.Append("Content-Range", $"bytes {start}-{end}/{fileInfo.Length}");
                 response.ContentLength = contentLength;
 
                 fileStream.Seek(start, SeekOrigin.Begin);
+                await Task.CompletedTask; 
                 return File(fileStream, "video/mp4", enableRangeProcessing: true);
             }
 
             response.ContentLength = fileInfo.Length;
+            await Task.CompletedTask; 
             return File(fileStream, "video/mp4", enableRangeProcessing: true);
         }
     }
